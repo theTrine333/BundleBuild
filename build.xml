@@ -12,7 +12,7 @@
                 <attribute name="Main-Class" value="com.cod3r.Main"/>
                 <attribute name="Class-Path" value="."/>
             </manifest>
-            <fileset dir="${dir.workspace}/BundleBuild/bin"/>
+            <fileset dir="${dir.workspace}/bin"/>
             <zipfileset excludes="META-INF/*.SF" src="./flatlaf-3.4.1.jar"/>
         </jar>
     </target>
