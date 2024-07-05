@@ -7,7 +7,7 @@
     <property name="dir.workspace" value="."/>
     <property name="dir.jarfile" value="${dir.buildfile}"/>
     <target name="create_run_jar">
-        <jar destfile="${dir.jarfile}/BundleBuild.jar" filesetmanifest="mergewithoutmain">
+        <jar destfile="./BundleBuild.jar" filesetmanifest="mergewithoutmain">
             <manifest>
                 <attribute name="Main-Class" value="com.cod3r.Main"/>
                 <attribute name="Class-Path" value="."/>
