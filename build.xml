@@ -4,7 +4,7 @@
     <!--ANT 1.7 is required                                        -->
     <!--define folder properties-->
     <property name="dir.buildfile" value="."/>
-    <property name="dir.workspace" value="/home/tesla/eclipse-workspace"/>
+    <property name="dir.workspace" value="."/>
     <property name="dir.jarfile" value="${dir.buildfile}"/>
     <target name="create_run_jar">
         <jar destfile="${dir.jarfile}/BundleBuild.jar" filesetmanifest="mergewithoutmain">
@@ -13,8 +13,7 @@
                 <attribute name="Class-Path" value="."/>
             </manifest>
             <fileset dir="${dir.workspace}/BundleBuild/bin"/>
-            <zipfileset excludes="META-INF/*.SF" src="/home/tesla/Downloads/bundletool-all-1.17.0.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="/home/tesla/Downloads/flatlaf-3.4.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="./flatlaf-3.4.1.jar"/>
         </jar>
     </target>
 </project>
