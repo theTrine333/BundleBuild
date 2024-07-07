@@ -3,6 +3,7 @@ package com.cod3r;
 import java.awt.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.MatteBorder;
+import java.util.concurrent.*;
 import java.awt.Toolkit;
 import javax.swing.*;
 import java.awt.event.*;
@@ -23,26 +24,34 @@ public class Home extends JFrame {
 	JRadioButton devRadiobtn;
 	public JComboBox devicesCombo;
 	public  ButtonGroup radioBtns = new ButtonGroup();
+	static ExecutorService executor = Executors.newSingleThreadExecutor();
+	
 	public static  JTextPane textPane;
 	
 	public Home() throws IOException {
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowOpened(WindowEvent e) {
-				Tools.startUp();
-				try {
-					String deviceName = Tools.getDevice();
-					devField.setText(deviceName.toUpperCase());
-					Tools.setMessage("Adb connected device...\t"+deviceName);
-					Tools.setDeviceConnected(true);
-				}catch(Exception E) {
-					devField.setText("NULL");
-					Tools.setMessage("Adb connected device...\tnull");
-					Tools.setDeviceConnected(false);
-					devRadiobtn.setEnabled(false);
-				}
-				
-				
+				executor.execute(new Runnable() {
+		            public void run() {
+		            	Tools.startUp();
+						try {
+							String deviceName = Tools.getDevice();
+							devField.setText(deviceName.toUpperCase());
+							Tools.setMessage("Adb connected device...\t"+deviceName);
+							Tools.setDeviceConnected(true);
+						}catch(Exception E) {
+							devField.setText("NULL");
+							Tools.setMessage("Adb connected device...\tnull");
+							Tools.setDeviceConnected(false);
+							devRadiobtn.setEnabled(false);
+						}
+		            }
+		        });
+			}
+			@Override
+			public void windowClosed(WindowEvent e) {
+				executor.shutdown();
 			}
 		});
 		setIconImage(Toolkit.getDefaultToolkit().getImage(Home.class.getResource("/icons/android.png")));
@@ -119,7 +128,6 @@ public class Home extends JFrame {
 				if(a == JFileChooser.APPROVE_OPTION) {
 					aabPath.setText(fileChooser.getSelectedFile().getAbsolutePath());
 					Tools.setAabPath(fileChooser.getSelectedFile().getAbsolutePath().toString());
-					Tools.setMessage("aab file..."+Tools.aabPath);
 				}
 			}
 		});
@@ -220,7 +228,13 @@ public class Home extends JFrame {
 					JOptionPane.showMessageDialog(null, "An error occured,\nPlease check the output dir and try again","Error",JOptionPane.ERROR_MESSAGE);
 //					Tools.setMessage(Tools.outputDir);
 				}else {
-					Tools.buildApks(Tools.getAabPath(), Tools.getOutputDir());
+					Tools.setMessage("Starting the build apks module");
+					executor.execute(new Runnable() {
+						public void run() {
+			            	Tools.buildApks(Tools.getAabPath(), Tools.getOutputDir());
+			            }
+			        });
+					executor.shutdown();
 				}
 			}
 		});
