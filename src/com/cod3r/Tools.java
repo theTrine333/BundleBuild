@@ -4,16 +4,18 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.regex.*;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import javax.swing.JOptionPane;
+
+import java.io.*;
 import com.cod3r.Home;
 
 import net.codejava.swing.download.SwingFileDownloadHTTP;
+
 public class Tools {
 	public static String Homedir = System.getProperty("user.home").toString() + "/bundlebuilder/";
 	static File homeDir = new File(Homedir);
@@ -28,7 +30,7 @@ public class Tools {
 	public static void setDeviceConnected(boolean connection) {
 		deviceConnected = connection;
 	}
-
+	static ExecutorService executor = Executors.newSingleThreadExecutor();
 	public static void startUp() {
 		if(homeDir.exists()) {
 			Tools.setMessage("BundleFolder exists..."+"YES");
@@ -132,7 +134,6 @@ public class Tools {
     		connectedDevicesCmd = "java -jar "+bundler+" build-apks --bundle="+aabPath+" --output="+outputDir+"/Output.apks --connected-device --ks=~/.gradle/keystore.kst --ks-key-alias=my-key-alias --ks-pass=pass:Ericko004";
     	}else {
     		connectedDevicesCmd = "java -jar "+bundler+" build-apks --bundle="+aabPath+" --output="+outputDir+"/Output.apks --ks=~/.gradle/keystore.kst --ks-key-alias=my-key-alias --ks-pass=pass:Ericko004 --mode=universal";
-        	
     	}
     	
       try {
@@ -154,8 +155,44 @@ public class Tools {
 	      }
 	      exitCode= process.waitFor();
 	      
-	      Tools.setMessage("[*] COMPLETED ");
+	      Tools.setMessage("[*] COMPLETED BUILDING APKs");
 	      Tools.setMessage(Home.dashes);
+	      int a = JOptionPane.showConfirmDialog(null,"The apks have been build succefully,\nDo you want to install them?", "Install apks", JOptionPane.YES_NO_OPTION);
+	      
+	      if (a == JOptionPane.YES_OPTION) {
+	    	  JOptionPane.showMessageDialog(null, "Make sure your adb device is plugged in", "Intalling apks", JOptionPane.INFORMATION_MESSAGE);
+	    	  Tools.setMessage("Installing apks to..."+getDevice());
+	    	  executor.execute(new Runnable() {
+	              public void run() {
+	            	  String installApks = "java -jar "+bundler+" install-apks --apks="+outputDir+"/Output.apks";
+	            	  ProcessBuilder processBuilder = new ProcessBuilder();
+	        	      Tools.setMessage(Home.dashes);
+	        	      Tools.setMessage("Running..."+installApks);
+	        	      processBuilder.command("bash", "-c", installApks);
+	        	      Tools.setMessage(Home.dashes);
+//	        	      Tools.setMessage("Running..."+connectedDevicesCmd);
+	        	      int exitCode;
+	        	      try {
+	        	    	  Process process = processBuilder.start();
+						  InputStream inputStream = process.getInputStream();
+						  BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+						  String line,output="";
+						  while ((line = reader.readLine()) != null) {
+						      output+=line;
+						      Tools.setMessage(line);
+						  }
+						  exitCode = process.waitFor();
+						  JOptionPane.showMessageDialog(null,"Installation completed successfull","Installed",JOptionPane.INFORMATION_MESSAGE);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+	              }
+	          });
+	      }
 	      return output;
       } catch (IOException | InterruptedException e) {
     	  e.printStackTrace();
@@ -164,7 +201,7 @@ public class Tools {
     }
     
     public static String getDevice() {
-    	String input = runCmd("adb devices -l");
+    	String input = runCmd("adb start-server;adb devices -l");
     	String regex = "model:([^\\s]+)";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(input);
