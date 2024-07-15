@@ -31,12 +31,18 @@ public class Home extends JFrame {
 	public static  JTextPane textPane;
 	
 	public Home() throws IOException {
+		
 		addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowOpened(WindowEvent e) {
 				executor.execute(new Runnable() {
 		            public void run() {
-		            	Tools.startUp();
+		            	try {
+							Tools.startUp();
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 						try {
 							String deviceName = Tools.getDevice();
 							devField.setText(deviceName.toUpperCase());
@@ -101,18 +107,20 @@ public class Home extends JFrame {
 		JMenuItem mntmDevelopersInfo = new JMenuItem("Developers info");
 		mnAbout.add(mntmDevelopersInfo);
 		
-		JMenuItem mntmEreeyey = new JMenuItem("Ereeyey");
-		mntmEreeyey.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				System.out.println("You clicked");
-			}
-		});
-		mnAbout.add(mntmEreeyey);
-		
 		JMenu mnSettings = new JMenu("Settings");
 		menuBar.add(mnSettings);
 		
 		JMenuItem mntmKeystore = new JMenuItem("Keystore");
+		mntmKeystore.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					new keystoreFrame().setVisible(true);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+		});
 		mnSettings.add(mntmKeystore);
 		
 		panel = new JPanel();
@@ -256,6 +264,7 @@ public class Home extends JFrame {
 			)
 		);
 		
+		JFrame frame = this;
 		JButton btnConvert = new JButton("Convert");
 		btnConvert.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -268,7 +277,7 @@ public class Home extends JFrame {
 					Tools.setMessage("Starting the build apks module");
 					executor.execute(new Runnable() {
 						public void run() {
-			            	Tools.buildApks(Tools.getAabPath(), Tools.getOutputDir());
+			            	Tools.buildApks(Tools.getAabPath(), Tools.getOutputDir(),frame);
 			            }
 			        });
 					executor.shutdown();
