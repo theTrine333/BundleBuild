@@ -2,7 +2,7 @@
 # BundleBuild
 ![Android Icon](https://github.com/theTrine333/BundleBuild/blob/main/src/icons/android.png)
 
-BundleBuild is a Java-based GUI tool designed to convert Android App Bundles (AAB) into APK files (.aab to .apk). This tool supports both Windows and Linux systems, featuring a beautiful and user-friendly interface created with the FlatLaf module.
+BundleBuild is a Java-based GUI tool designed to convert Android App Bundles (AAB) into APK files (.aab to .apk). This tool supports both Windows and Linux systems, featuring a beautiful and user-friendly interface created with the FlatLaf modules.
 
 ## Features
 
