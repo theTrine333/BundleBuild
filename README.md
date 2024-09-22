@@ -15,7 +15,7 @@ BundleBuild is a Java-based GUI tool designed to convert Android App Bundles (AA
 
 - Java Development Kit (JDK) 21 or higher (recommended [openjdk21](https://openjdk.org/projects/jdk/21/))
 - Android SDK with `bundletool` installed
-
+- Java ant
 ## Installation
 
 ### Prerequisites
@@ -26,8 +26,9 @@ Ensure you have the following installed:
 ### Clone the Repository
 
 ```sh
-git clone https://github.com/your-username/BundleBuild.git
+git clone https://github.com/theTrine333/BundleBuild.git
 cd BundleBuild
+ant
 ```
 
 ## Usage
